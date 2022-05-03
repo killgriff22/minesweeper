@@ -122,7 +122,13 @@ while running:
     if pickedFlag:
         print(f"picked! {picked}")
         if picked == "r":
-            drawcell(mousepos[0]//2, mousepos[1]//2,pickedred)
+            for row in board:
+                for col in row:
+                    cellx, celly = col[2]
+                    mousex, mousey = mousepos
+                    if mousex >= col[2][0] and mousex <= col[2][0]+49:
+                        if mousey >= col[2][1] and mousey <= col[2][1]+49:
+                            drawcell(cellx, celly,pickedred)
     pygame.display.flip()
 
 pygame.quit()
