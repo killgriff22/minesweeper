@@ -14,8 +14,8 @@ pickedred, pickedblack = None, None
 pickedFlag = False
 picked = None
 board = [
-    [["w-r", 1, (0, 100)], ["b-r", 1, (50, 100)], ["w-r", 1, (100, 100)], ["b-r", 1, (150, 100)],
-     ["w-r", 1, (200, 100)], ["b-r", 1, (250, 100)], ["w-r", 1, (300, 100)], ["b-r", 1, (350, 100)]],
+    [["w-r", 0, (0, 100)], ["b-r", 0, (50, 100)], ["w-r", 0, (100, 100)], ["b-r", 0, (150, 100)],
+     ["w-r", 0, (200, 100)], ["b-r", 0, (250, 100)], ["w-r", 0, (300, 100)], ["b-r", 0, (350, 100)]],
     [["b-r", 0, (0, 150)], ["w-r", 0, (50, 150)], ["b-r", 0, (100, 150)], ["w-r", 0, (150, 150)],
      ["b-r", 0, (200, 150)], ["w-r", 0, (250, 150)], ["b-r", 0, (300, 150)], ["w-r", 0, (350, 150)]],
     [["w-e", 0, (0, 200)], ["b-e", 0, (50, 200)], ["w-e", 0, (100, 200)], ["b-e", 0, (150, 200)],
@@ -28,8 +28,8 @@ board = [
      ["b-e", 0, (200, 350)], ["w-e", 0, (250, 350)], ["b-e", 0, (300, 350)], ["w-e", 0, (350, 350)]],
     [["w-b", 0, (0, 400)], ["b-b", 0, (50, 400)], ["w-b", 0, (100, 400)], ["b-b", 0, (150, 400)],
      ["w-b", 0, (200, 400)], ["b-b", 0, (250, 400)], ["w-b", 0, (300, 400)], ["b-b", 0, (350, 400)]],
-    [["b-b", 1, (0, 450)], ["w-b", 1, (50, 450)], ["b-b", 1, (100, 450)], ["w-b", 1, (150, 450)],
-     ["b-b", 1, (200, 450)], ["w-b", 1, (250, 450)], ["b-b", 1, (300, 450)], ["w-b", 1, (350, 450)]],
+    [["b-b", 0, (0, 450)], ["w-b", 0, (50, 450)], ["b-b", 0, (100, 450)], ["w-b", 0, (150, 450)],
+     ["b-b", 0, (200, 450)], ["w-b", 0, (250, 450)], ["b-b", 0, (300, 450)], ["w-b", 0, (350, 450)]],
 
 ]
 
@@ -61,15 +61,12 @@ def init():
 
 
 init()
-def drawcell(x, y, tile): return screen.blit(tile, (x, y))
+def drawcell(x:int, y:int, tile:pygame.surface.Surface): return screen.blit(tile, (x, y))
 
 
 puaseFlag = False
 
 while running:
-    # 1 Process input/events
-    # clock.tick(FPS)  # will make the loop run at the same speed all the time
-    # gets all the events which have occured till now and keeps tab of them.
     mousepos = pygame.mouse.get_pos()
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN and not puaseFlag:
@@ -86,7 +83,9 @@ while running:
                                     if col[0] == "b-e" or col[0] == "w-e":
                                         col[0] = f'{col[0][0]}-{picked}'
                                         picked = "e"
-
+                                        if pickedking:
+                                            col[1] = 1
+                                            pickedking=False
                                         pickedFlag = False
             elif not pickedFlag:
                 if mousepos[1] > 100:
@@ -99,6 +98,8 @@ while running:
                                     if col[0] != "b-e" or col[0] != "w-e":
                                         picked = col[0][2]
                                         col[0] = f'{col[0][0]}-e'
+                                        if col[1] == 1:
+                                            pickedking = True
                                         col[1] = 0
                                         pickedFlag = True
 
@@ -120,7 +121,6 @@ while running:
                         drawcell(col[2][0], col[2][1], tile[0])
 
     if pickedFlag:
-        print(f"picked! {picked}")
         if picked == "r":
             for row in board:
                 for col in row:
@@ -129,6 +129,16 @@ while running:
                     if mousex >= col[2][0] and mousex <= col[2][0]+49:
                         if mousey >= col[2][1] and mousey <= col[2][1]+49:
                             drawcell(cellx, celly,pickedred)
+        elif picked == "b":
+            for row in board:
+                for col in row:
+                    cellx, celly = col[2]
+                    mousex, mousey = mousepos
+                    if mousex >= col[2][0] and mousex <= col[2][0]+49:
+                        if mousey >= col[2][1] and mousey <= col[2][1]+49:
+                            drawcell(cellx, celly,pickedblack)
+        elif picked == "e":
+            pickedFlag = False
     pygame.display.flip()
 
 pygame.quit()
